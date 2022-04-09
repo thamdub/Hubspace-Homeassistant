@@ -167,7 +167,7 @@ def getChildId(refresh_token,accountId,deviceName):
     return child,deviceId,model
 
 
-def getState(refresh_token,accountId,child,desiredStateName):
+def getState(refresh_token,accountId,child,desiredStateName,instance = None):
 
     state = None
     
@@ -190,6 +190,8 @@ def getState(refresh_token,accountId,child,desiredStateName):
         for key,val in lis.items(): 
             print(str(key) + " : " + str(val))
             if key == 'functionClass' and val == desiredStateName:
+                if instance and lis.get('functionInstance') != instance:
+                    continue
                 state = lis.get('value')
 
     print(desiredStateName + ": " + state)
@@ -198,7 +200,7 @@ def getState(refresh_token,accountId,child,desiredStateName):
 def getPowerState(refresh_token,accountId,child):
     getState(refresh_token,accountId,child,"power")
 
-def setState(refresh_token,accountId,child,desiredStateName,state):
+def setState(refresh_token,accountId,child,desiredStateName,state,instance = None):
 
     
     token = getAuthTokenFromRefreshToken(refresh_token)
@@ -214,6 +216,7 @@ def setState(refresh_token,accountId,child,desiredStateName,state):
         "values": [
             {
                 "functionClass": desiredStateName,
+                "functionInstance": instance,
                 "lastUpdateTime": utc_time,
                 "value": state
             }

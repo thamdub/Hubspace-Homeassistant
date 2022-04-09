@@ -157,7 +157,7 @@ def getChildId(refresh_token,accountId,deviceName):
     return child,model
 
 
-def getState(refresh_token,accountId,child,desiredStateName):
+def getState(refresh_token,accountId,child,desiredStateName,instance = None):
 
     state = None
     
@@ -178,6 +178,8 @@ def getState(refresh_token,accountId,child,desiredStateName):
     for lis in r.json().get('values'):
         for key,val in lis.items():
             if key == 'functionClass' and val == desiredStateName:
+                if instance and lis.get('functionInstance') != instance:
+                    continue
                 state = lis.get('value')
 
     #print(desiredStateName + ": " + state)
@@ -186,7 +188,7 @@ def getState(refresh_token,accountId,child,desiredStateName):
 def getPowerState(refresh_token,accountId,child):
     return getState(refresh_token,accountId,child,"power")
 
-def setState(refresh_token,accountId,child,desiredStateName,state):
+def setState(refresh_token,accountId,child,desiredStateName,state,instance = None):
 
     
     token = getAuthTokenFromRefreshToken(refresh_token)
@@ -202,6 +204,7 @@ def setState(refresh_token,accountId,child,desiredStateName,state):
         "values": [
             {
                 "functionClass": desiredStateName,
+                "functionInstance": instance,
                 "lastUpdateTime": utc_time,
                 "value": state
             }
@@ -228,8 +231,8 @@ def setState(refresh_token,accountId,child,desiredStateName,state):
     #print(desiredStateName + ": " + state)
     return state
 
-def setPowerState(refresh_token,accountId,child,state):
-    setState(refresh_token,accountId,child,"power",state)
+# def setPowerState(refresh_token,accountId,child,state):
+#     setState(refresh_token,accountId,child,"power",state)
     
  
 async def getConclave(refresh_token,accountId):
